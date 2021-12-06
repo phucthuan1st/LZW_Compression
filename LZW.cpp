@@ -6,7 +6,6 @@
 #include <bitset>
 
 using namespace std;
-#define BIT_PER_CODE 10
 
 map<std::string, int> word;
 static int table_size = 255;
@@ -43,6 +42,27 @@ vector<short> encode(string source) {
     return compress_code;
 }
 
+unsigned int bit_of(short code) {
+    int c = code;
+    int count = 0;
+
+    while (c > 0) {
+        c = c >> 1;
+        count++;
+    }
+
+    return count;
+}
+
+short MaxOf(vector<short> compress_code) {
+    short max = compress_code[0];
+    for (int i = 1; i < compress_code.size(); i++) {
+        if (compress_code[i] > max)
+            max = compress_code[i];
+    }
+    return max;
+}
+
 string DecToBin(short code, int number_of_bit) {
     string result;
     while (code > 0) {
@@ -63,6 +83,7 @@ string DecToBin(short code, int number_of_bit) {
 void CompressFile(string filename, vector<short> compress_code) {
     
     string bin_code;
+    int BIT_PER_CODE = bit_of(MaxOf(compress_code));
 
     //compress code to binary format
     for (int i = 0; i < compress_code.size(); i++) {
@@ -107,14 +128,15 @@ string decode(vector<short> compress_code) {
     return result;
 }
 
-
 int main() {
     InitializeWord();
     vector<short> compress_code = encode("WYS*WYGWYS*WYSWYSG");
+    
     for (int i = 0; i < compress_code.size(); i++) {
         cout << compress_code[i] << " ";
     }
     cout << "\n=====================\n";
+    
     CompressFile("Compressed.lzw", compress_code);
 
     return 0;
